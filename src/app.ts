@@ -15,7 +15,7 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://bunnyscript-frontend.vercel.app",
     credentials: true,
   })
 );
