@@ -22,7 +22,7 @@ export const createPost = catchAsync(
 );
 
 export const getPosts = catchAsync(async (req: Request, res: Response) => {
-  const posts = await postService.getPosts();
+  const posts = await postService.getPosts(req.query.userId as string);
 
   res.json({
     success: true,
@@ -41,13 +41,10 @@ export const getPost = catchAsync(async (req: Request, res: Response) => {
 
 export const updatePost = catchAsync(
   async (req: AuthRequest, res: Response) => {
-    const { content, imageUrl } = req.body;
-
     const post = await postService.updatePost(
       req.params.id as string,
       req.userId!,
-      content,
-      imageUrl
+      req.body
     );
 
     res.json({

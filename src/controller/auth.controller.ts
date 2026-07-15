@@ -11,6 +11,8 @@ export const register = catchAsync(async (req: Request, res: Response) => {
   const body = registerSchema.parse(req.body);
 
   const user = await authService.register(
+    body.firstName,
+    body.lastName,
     body.email,
     body.password
   );
@@ -59,6 +61,8 @@ export const profile = catchAsync(async (req: AuthRequest, res) => {
       id: true,
       email: true,
       createdAt: true,
+      firstName: true,
+      lastName: true,
     },
   });
 

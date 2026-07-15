@@ -1,4 +1,3 @@
-
 import AppError from "../utils/AppError";
 import prisma from "../utils/client";
 
@@ -18,19 +17,33 @@ const createPost = async (
         select: {
           id: true,
           email: true,
+          firstName: true,
+          lastName: true,
         },
       },
     },
   });
 };
 
-const getPosts = async () => {
+const getPosts = async (userId: string) => {
   return await prisma.post.findMany({
+    where: {
+      OR: [
+        {
+          visibility: "PUBLIC",
+        },
+        {
+          authorId: userId,
+        },
+      ],
+    },
     include: {
       author: {
         select: {
           id: true,
           email: true,
+          firstName: true,
+          lastName: true,
         },
       },
 
@@ -40,6 +53,8 @@ const getPosts = async () => {
             select: {
               id: true,
               email: true,
+              firstName: true,
+              lastName: true,
             },
           },
           replies: {
@@ -48,6 +63,19 @@ const getPosts = async () => {
                 select: {
                   id: true,
                   email: true,
+                  likes: true,
+                },
+              },
+              likes: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                      email: true,
+                    },
+                  },
                 },
               },
             },
@@ -58,6 +86,8 @@ const getPosts = async () => {
                 select: {
                   id: true,
                   email: true,
+                  firstName: true,
+                  lastName: true,
                 },
               },
             },
@@ -94,6 +124,8 @@ const getPost = async (id: string) => {
         select: {
           id: true,
           email: true,
+          firstName: true,
+          lastName: true,
         },
       },
 
@@ -119,8 +151,11 @@ const getPost = async (id: string) => {
 const updatePost = async (
   postId: string,
   userId: string,
-  content: string,
-  imageUrl?: string
+  data: {
+    content?: string;
+    imageUrl?: string;
+    visibility?: "PUBLIC" | "PRIVATE";
+  }
 ) => {
   const post = await prisma.post.findUnique({
     where: {
@@ -136,14 +171,11 @@ const updatePost = async (
     throw new AppError(403, "You can only update your own post");
   }
 
-  return await prisma.post.update({
+  return prisma.post.update({
     where: {
       id: postId,
     },
-    data: {
-      content,
-      imageUrl,
-    },
+    data,
   });
 };
 

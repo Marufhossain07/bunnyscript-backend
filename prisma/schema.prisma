@@ -13,6 +13,8 @@ model User {
   passwordhash String
   createdAt    DateTime  @default(now())
 
+  firstName     String
+  lastName      String
   posts    Post[]
   comments Comment[]
   replies  Reply[]
